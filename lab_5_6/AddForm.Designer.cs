@@ -64,7 +64,6 @@
             this.cmbQualificationId = new System.Windows.Forms.ComboBox();
             this.lblAdmissionYear = new System.Windows.Forms.Label();
             this.txtAdmissionYear = new System.Windows.Forms.TextBox();
-            this.btnEdit = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -416,26 +415,16 @@
             this.txtAdmissionYear.TabIndex = 35;
             this.txtAdmissionYear.TextChanged += new System.EventHandler(this.txtAdmissionYear_TextChanged);
             // 
-            // btnEdit
-            // 
-            this.btnEdit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
-            this.btnEdit.Location = new System.Drawing.Point(200, 492);
-            this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(139, 41);
-            this.btnEdit.TabIndex = 37;
-            this.btnEdit.Text = "Изменить";
-            this.btnEdit.UseVisualStyleBackColor = true;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
-            // 
             // btnCancel
             // 
             this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
-            this.btnCancel.Location = new System.Drawing.Point(363, 492);
+            this.btnCancel.Location = new System.Drawing.Point(254, 492);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(139, 41);
             this.btnCancel.TabIndex = 38;
             this.btnCancel.Text = "Отменить";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // btnSave
             // 
@@ -454,7 +443,6 @@
             this.ClientSize = new System.Drawing.Size(900, 562);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnEdit);
             this.Controls.Add(this.txtAdmissionYear);
             this.Controls.Add(this.lblAdmissionYear);
             this.Controls.Add(this.cmbQualificationId);
@@ -537,7 +525,6 @@
         private System.Windows.Forms.ComboBox cmbQualificationId;
         private System.Windows.Forms.Label lblAdmissionYear;
         private System.Windows.Forms.TextBox txtAdmissionYear;
-        private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSave;
     }

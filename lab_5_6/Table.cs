@@ -167,10 +167,26 @@ namespace lab_5_6
         {
 
         }
-
+        private bool isFormOpen = false;
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
 
+            if (isFormOpen)
+                return;
+
+            isFormOpen = true;
+
+            try
+            {
+                AddForm add = new AddForm(nameTable, null, sc);
+                add.FormClosed += (s, args) => isFormOpen = false;
+                add.Show();
+            }
+            catch
+            {
+                isFormOpen = false;
+                throw;
+            }
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
