@@ -54,7 +54,6 @@ namespace lab_5_6
                     lblGroupId.Visible = true;
                     txtGroup.Visible = true;
 
-                    LoadGroups();
                     LoadGenders();
 
                     if (!isNewRecord)
@@ -99,35 +98,33 @@ namespace lab_5_6
                     lblDisciplineDescription.Visible = true;
                     txtDisciplineDescription.Visible = true;
                     lblTeacherId.Visible = true;
-                    cmbTeacherId.Visible = true;
+                    txtTeacherId.Visible = true;
                     lblHoursCount.Visible = true;
-                    txtHoursCount.Visible = true;
+                    textBox1.Visible = true;
 
-                    LoadTeachers();
 
                     if (!isNewRecord)
                     {
                         txtDisciplineName.Text = dataRow["discipline_name"].ToString();
                         txtDisciplineDescription.Text = dataRow["discipline_description"].ToString();
-                        cmbTeacherId.SelectedValue = dataRow["teacher_id"];
-                        txtHoursCount.Text = dataRow["hours_count"].ToString();
+                        txtTeacherId.Text = dataRow["teacher_id"].ToString();
+                        textBox1.Text = dataRow["hours_count"].ToString();
                     }
                     break;
 
                 case "Grades":
                     lblStudentId.Visible = true;
-                    cmbStudentId.Visible = true;
+                    txtStudentId.Visible = true;
                     lblDisciplineId.Visible = true;
                     cmbDisciplineId.Visible = true;
                     lblGrade.Visible = true;
                     txtGrade.Visible = true;
 
-                    LoadStudents();
                     LoadDisciplines();
 
                     if (!isNewRecord)
                     {
-                        cmbStudentId.SelectedValue = dataRow["student_id"];
+                        txtStudentId.Text = dataRow["student_id"].ToString();
                         cmbDisciplineId.SelectedValue = dataRow["discipline_id"];
                         txtGrade.Text = dataRow["grade"].ToString();
                     }
@@ -154,60 +151,10 @@ namespace lab_5_6
                         txtAdmissionYear.Text = dataRow["admission_year"].ToString();
                     }
                     break;
-
-                case "Direction":
-                    lblDirection.Visible = true;
-                    txtDirection.Visible = true;
-
-                    if (!isNewRecord)
-                    {
-                        txtDirection.Text = dataRow["direction"].ToString();
-                    }
-                    break;
-
-                case "Qualification":
-                    lblQualification.Visible = true;
-                    txtQualification.Visible = true;
-
-                    if (!isNewRecord)
-                    {
-                        txtQualification.Text = dataRow["qualification"].ToString();
-                    }
-                    break;
-
-                case "Position":
-                    lblPosition.Visible = true;
-                    txtPosition.Visible = true;
-
-                    if (!isNewRecord)
-                    {
-                        txtPosition.Text = dataRow["position"].ToString();
-                    }
-                    break;
+                
             }
         }
 
-        private void LoadGroups()
-        {
-            cmbGroupId.Items.Clear();
-            string query = "SELECT group_id, name FROM Groups";
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    cmbGroupId.Items.Add(new
-                    {
-                        Text = reader["name"].ToString(),
-                        Value = reader["group_id"]
-                    });
-                }
-            }
-
-            cmbGroupId.DisplayMember = "Text";
-            cmbGroupId.ValueMember = "Value";
-        }
 
         private void LoadGenders()
         {
@@ -236,50 +183,6 @@ namespace lab_5_6
 
             cmbPositionId.DisplayMember = "Text";
             cmbPositionId.ValueMember = "Value";
-        }
-
-        private void LoadTeachers()
-        {
-            cmbTeacherId.Items.Clear();
-            string query = "SELECT teacher_id, full_name FROM Teachers";
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    cmbTeacherId.Items.Add(new
-                    {
-                        Text = reader["full_name"].ToString(),
-                        Value = reader["teacher_id"]
-                    });
-                }
-            }
-
-            cmbTeacherId.DisplayMember = "Text";
-            cmbTeacherId.ValueMember = "Value";
-        }
-
-        private void LoadStudents()
-        {
-            cmbStudentId.Items.Clear();
-            string query = "SELECT student_id, full_name FROM Students";
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-
-            using (SQLiteDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    cmbStudentId.Items.Add(new
-                    {
-                        Text = reader["full_name"].ToString(),
-                        Value = reader["student_id"]
-                    });
-                }
-            }
-
-            cmbStudentId.DisplayMember = "Text";
-            cmbStudentId.ValueMember = "Value";
         }
 
         private void LoadDisciplines()
@@ -374,13 +277,13 @@ namespace lab_5_6
             lblDisciplineDescription.Visible = false;
             txtDisciplineDescription.Visible = false;
             lblTeacherId.Visible = false;
-            cmbTeacherId.Visible = false;
+            txtTeacherId.Visible = false;
             lblHoursCount.Visible = false;
-            txtHoursCount.Visible = false;
+            textBox1.Visible = false;
 
             // Grades
             lblStudentId.Visible = false;
-            cmbStudentId.Visible = false;
+            txtStudentId.Visible = false;
             lblDisciplineId.Visible = false;
             cmbDisciplineId.Visible = false;
             lblGrade.Visible = false;
@@ -395,18 +298,6 @@ namespace lab_5_6
             cmbQualificationId.Visible = false;
             lblAdmissionYear.Visible = false;
             txtAdmissionYear.Visible = false;
-
-            // Direction
-            lblDirection.Visible = false;
-            txtDirection.Visible = false;
-
-            // Qualification
-            lblQualification.Visible = false;
-            txtQualification.Visible = false;
-
-            // Position
-            lblPosition.Visible = false;
-            txtPosition.Visible = false;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -435,15 +326,6 @@ namespace lab_5_6
                         break;
                     case "Groups":
                         SaveGroup();
-                        break;
-                    case "Direction":
-                        SaveDirection();
-                        break;
-                    case "Qualification":
-                        SaveQualification();
-                        break;
-                    case "Position":
-                        SavePosition();
                         break;
                 }
                 this.DialogResult = DialogResult.OK;
@@ -538,8 +420,8 @@ namespace lab_5_6
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
             cmd.Parameters.AddWithValue("@discipline_name", txtDisciplineName.Text);
             cmd.Parameters.AddWithValue("@discipline_description", txtDisciplineDescription.Text);
-            cmd.Parameters.AddWithValue("@teacher_id", cmbTeacherId.SelectedValue);
-            cmd.Parameters.AddWithValue("@hours_count", txtHoursCount.Text);
+            cmd.Parameters.AddWithValue("@teacher_id", txtTeacherId.Text);
+            cmd.Parameters.AddWithValue("@hours_count", textBox1.Text);
 
             if (!isNewRecord)
             {
@@ -556,7 +438,7 @@ namespace lab_5_6
                 : "UPDATE Grades SET student_id = @student_id, discipline_id = @discipline_id, grade = @grade WHERE grade_id = @grade_id";
 
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
-            cmd.Parameters.AddWithValue("@student_id", cmbStudentId.SelectedValue);
+            cmd.Parameters.AddWithValue("@student_id", txtStudentId.Text);
             cmd.Parameters.AddWithValue("@discipline_id", cmbDisciplineId.SelectedValue);
             cmd.Parameters.AddWithValue("@grade", txtGrade.Text);
 
@@ -587,62 +469,104 @@ namespace lab_5_6
 
             cmd.ExecuteNonQuery();
         }
-
-        private void SaveDirection()
-        {
-            string query = isNewRecord
-                ? "INSERT INTO Direction (direction) VALUES (@direction)"
-                : "UPDATE Direction SET direction = @direction WHERE direction_id = @direction_id";
-
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-            cmd.Parameters.AddWithValue("@direction", txtDirection.Text);
-
-            if (!isNewRecord)
-            {
-                cmd.Parameters.AddWithValue("@direction_id", dataRow["direction_id"]);
-            }
-
-            cmd.ExecuteNonQuery();
-        }
-
-        private void SaveQualification()
-        {
-            string query = isNewRecord
-                ? "INSERT INTO Qualification (qualification) VALUES (@qualification)"
-                : "UPDATE Qualification SET qualification = @qualification WHERE qualification_id = @qualification_id";
-
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-            cmd.Parameters.AddWithValue("@qualification", txtQualification.Text);
-
-            if (!isNewRecord)
-            {
-                cmd.Parameters.AddWithValue("@qualification_id", dataRow["qualification_id"]);
-            }
-
-            cmd.ExecuteNonQuery();
-        }
-
-        private void SavePosition()
-        {
-            string query = isNewRecord
-                ? "INSERT INTO Position (position) VALUES (@position)"
-                : "UPDATE Position SET position = @position WHERE position_id = @position_id";
-
-            SQLiteCommand cmd = new SQLiteCommand(query, sc);
-            cmd.Parameters.AddWithValue("@position", txtPosition.Text);
-
-            if (!isNewRecord)
-            {
-                cmd.Parameters.AddWithValue("@position_id", dataRow["position_id"]);
-            }
-
-            cmd.ExecuteNonQuery();
-        }
-
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        private void txtFullName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtDisciplineName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtStudentId_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtGroupName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPhone_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtDisciplineDescription_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbDisciplineId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbDirectionId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dtpBirthDate_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtTeacherId_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbQualificationId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtStudentBookNumber_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbPositionId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtGrade_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtAdmissionYear_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbGender_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtGroup_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
