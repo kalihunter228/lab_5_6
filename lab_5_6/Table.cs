@@ -150,7 +150,32 @@ namespace lab_5_6
         }
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
+            if (isFormOpen)
+                return;
 
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                isFormOpen = true;
+                try
+                {
+                    DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
+                    DataRow dataRow = ((DataRowView)selectedRow.DataBoundItem).Row;
+
+                    AddForm add = new AddForm(nameTable, dataRow, sc);
+                    add.FormClosed += (s, args) => isFormOpen = false;
+                    add.Show();
+                }
+                catch (Exception ex)
+                {
+                    isFormOpen = false;
+                    MessageBox.Show("Ошибка при открытии формы: " + ex.Message);
+                    throw;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выделите строку для изменения.");
+            }
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)

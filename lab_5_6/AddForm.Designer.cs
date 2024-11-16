@@ -80,7 +80,7 @@
             // lblPhone
             // 
             this.lblPhone.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblPhone.Location = new System.Drawing.Point(34, 84);
+            this.lblPhone.Location = new System.Drawing.Point(34, 87);
             this.lblPhone.Name = "lblPhone";
             this.lblPhone.Size = new System.Drawing.Size(134, 35);
             this.lblPhone.TabIndex = 1;
@@ -89,16 +89,16 @@
             // lblBirthDate
             // 
             this.lblBirthDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblBirthDate.Location = new System.Drawing.Point(34, 132);
+            this.lblBirthDate.Location = new System.Drawing.Point(34, 134);
             this.lblBirthDate.Name = "lblBirthDate";
-            this.lblBirthDate.Size = new System.Drawing.Size(199, 35);
+            this.lblBirthDate.Size = new System.Drawing.Size(238, 35);
             this.lblBirthDate.TabIndex = 2;
             this.lblBirthDate.Text = "Дата рождения";
             // 
             // lblGender
             // 
             this.lblGender.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblGender.Location = new System.Drawing.Point(34, 241);
+            this.lblGender.Location = new System.Drawing.Point(34, 239);
             this.lblGender.Name = "lblGender";
             this.lblGender.Size = new System.Drawing.Size(94, 35);
             this.lblGender.TabIndex = 3;
@@ -109,7 +109,7 @@
             this.lblGroupId.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
             this.lblGroupId.Location = new System.Drawing.Point(34, 292);
             this.lblGroupId.Name = "lblGroupId";
-            this.lblGroupId.Size = new System.Drawing.Size(94, 35);
+            this.lblGroupId.Size = new System.Drawing.Size(108, 35);
             this.lblGroupId.TabIndex = 4;
             this.lblGroupId.Text = "Группа";
             // 
@@ -225,7 +225,7 @@
             // lblDisciplineDescription
             // 
             this.lblDisciplineDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblDisciplineDescription.Location = new System.Drawing.Point(34, 84);
+            this.lblDisciplineDescription.Location = new System.Drawing.Point(34, 86);
             this.lblDisciplineDescription.Name = "lblDisciplineDescription";
             this.lblDisciplineDescription.Size = new System.Drawing.Size(164, 35);
             this.lblDisciplineDescription.TabIndex = 16;
@@ -244,9 +244,9 @@
             // lblTeacherId
             // 
             this.lblTeacherId.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblTeacherId.Location = new System.Drawing.Point(34, 132);
+            this.lblTeacherId.Location = new System.Drawing.Point(34, 134);
             this.lblTeacherId.Name = "lblTeacherId";
-            this.lblTeacherId.Size = new System.Drawing.Size(206, 35);
+            this.lblTeacherId.Size = new System.Drawing.Size(238, 35);
             this.lblTeacherId.TabIndex = 18;
             this.lblTeacherId.Text = "Преподаватель";
             // 
@@ -321,7 +321,7 @@
             // lblGrade
             // 
             this.lblGrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblGrade.Location = new System.Drawing.Point(34, 181);
+            this.lblGrade.Location = new System.Drawing.Point(34, 134);
             this.lblGrade.Name = "lblGrade";
             this.lblGrade.Size = new System.Drawing.Size(241, 35);
             this.lblGrade.TabIndex = 26;
@@ -330,7 +330,7 @@
             // txtGrade
             // 
             this.txtGrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.8F);
-            this.txtGrade.Location = new System.Drawing.Point(281, 183);
+            this.txtGrade.Location = new System.Drawing.Point(281, 135);
             this.txtGrade.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtGrade.Name = "txtGrade";
             this.txtGrade.Size = new System.Drawing.Size(224, 34);
@@ -359,7 +359,7 @@
             // lblDirectionId
             // 
             this.lblDirectionId.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.8F);
-            this.lblDirectionId.Location = new System.Drawing.Point(34, 84);
+            this.lblDirectionId.Location = new System.Drawing.Point(34, 88);
             this.lblDirectionId.Name = "lblDirectionId";
             this.lblDirectionId.Size = new System.Drawing.Size(238, 35);
             this.lblDirectionId.TabIndex = 30;
@@ -408,7 +408,7 @@
             // txtAdmissionYear
             // 
             this.txtAdmissionYear.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.8F);
-            this.txtAdmissionYear.Location = new System.Drawing.Point(281, 182);
+            this.txtAdmissionYear.Location = new System.Drawing.Point(281, 183);
             this.txtAdmissionYear.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtAdmissionYear.Name = "txtAdmissionYear";
             this.txtAdmissionYear.Size = new System.Drawing.Size(224, 34);
@@ -435,6 +435,7 @@
             this.btnSave.TabIndex = 39;
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // AddForm
             // 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
@@ -26,7 +27,6 @@ namespace lab_5_6
 
         private void LoadForm()
         {
-            // Скрываем все элементы управления
             HideAllControls();
 
             if (isNewRecord)
@@ -58,12 +58,12 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
-                        txtFullName.Text = dataRow["full_name"].ToString();
-                        txtPhone.Text = dataRow["phone"].ToString();
-                        dtpBirthDate.Value = DateTime.Parse(dataRow["birth_date"].ToString());
-                        txtStudentBookNumber.Text = dataRow["student_book_number"].ToString();
-                        cmbGender.SelectedItem = dataRow["gender"].ToString();
-                        txtGroup.Text = dataRow["group_id"].ToString();
+                        txtFullName.Text = dataRow["ФИО"].ToString();
+                        txtPhone.Text = dataRow["Телефон"].ToString();
+                        dtpBirthDate.Value = DateTime.Parse(dataRow["Дата рождения"].ToString());
+                        txtStudentBookNumber.Text = dataRow["Номер студенческого билета"].ToString();
+                        cmbGender.SelectedItem = dataRow["Пол"].ToString();
+                        txtGroup.Text = dataRow["Группа"].ToString();
                     }
                     break;
 
@@ -84,11 +84,11 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
-                        txtFullName.Text = dataRow["full_name"].ToString();
-                        txtPhone.Text = dataRow["phone"].ToString();
-                        dtpBirthDate.Value = DateTime.Parse(dataRow["birth_date"].ToString());
-                        cmbGender.SelectedItem = dataRow["gender"].ToString();
-                        cmbPositionId.SelectedValue = dataRow["position_id"];
+                        txtFullName.Text = dataRow["ФИО"].ToString();
+                        txtPhone.Text = dataRow["Телефон"].ToString();
+                        dtpBirthDate.Value = DateTime.Parse(dataRow["Дата рождения"].ToString());
+                        cmbGender.SelectedItem = dataRow["Пол"].ToString();
+                        cmbPositionId.SelectedValue = dataRow["Должность"];
                     }
                     break;
 
@@ -105,10 +105,10 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
-                        txtDisciplineName.Text = dataRow["discipline_name"].ToString();
-                        txtDisciplineDescription.Text = dataRow["discipline_description"].ToString();
-                        txtTeacherId.Text = dataRow["teacher_id"].ToString();
-                        textBox1.Text = dataRow["hours_count"].ToString();
+                        txtDisciplineName.Text = dataRow["Название дисциплины"].ToString();
+                        txtDisciplineDescription.Text = dataRow["Описание"].ToString();
+                        txtTeacherId.Text = dataRow["Преподаватель"].ToString();
+                        textBox1.Text = dataRow["Количество часов"].ToString();
                     }
                     break;
 
@@ -124,9 +124,9 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
-                        txtStudentId.Text = dataRow["student_id"].ToString();
-                        cmbDisciplineId.SelectedValue = dataRow["discipline_id"];
-                        txtGrade.Text = dataRow["grade"].ToString();
+                        txtStudentId.Text = dataRow["Студент"].ToString();
+                        cmbDisciplineId.SelectedValue = dataRow["Дисциплина"];
+                        txtGrade.Text = dataRow["Оценка"].ToString();
                     }
                     break;
 
@@ -145,13 +145,13 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
-                        txtGroupName.Text = dataRow["name"].ToString();
-                        cmbDirectionId.SelectedValue = dataRow["direction_id"];
-                        cmbQualificationId.SelectedValue = dataRow["qualification_id"];
-                        txtAdmissionYear.Text = dataRow["admission_year"].ToString();
+                        txtGroupName.Text = dataRow["Название группы"].ToString();
+                        cmbDirectionId.SelectedValue = dataRow["Направление"];
+                        cmbQualificationId.SelectedValue = dataRow["Квалификация"];
+                        txtAdmissionYear.Text = dataRow["Год поступления"].ToString();
                     }
                     break;
-                
+
             }
         }
 
@@ -304,32 +304,37 @@ namespace lab_5_6
         {
             if (!ValidateInputs())
             {
-                MessageBox.Show("Пожалуйста, проверьте правильность ввода данных.", "Ошибка валидации", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
+                bool saveSuccessful = false;
+
                 switch (tableName)
                 {
-                    case "Students":
-                        SaveStudent();
+                    case "Студенты":
+                        saveSuccessful = SaveStudent();
                         break;
-                    case "Teachers":
-                        SaveTeacher();
+                    case "Преподаватели":
+                        saveSuccessful = SaveTeacher();
                         break;
-                    case "Disciplines":
-                        SaveDiscipline();
+                    case "Дисциплины":
+                        saveSuccessful = SaveDiscipline();
                         break;
-                    case "Grades":
-                        SaveGrade();
+                    case "Оценки":
+                        saveSuccessful = SaveGrade();
                         break;
-                    case "Groups":
-                        SaveGroup();
+                    case "Группы":
+                        saveSuccessful = SaveGroup();
                         break;
                 }
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+
+                if (saveSuccessful)
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -339,28 +344,209 @@ namespace lab_5_6
 
         private bool ValidateInputs()
         {
-            // Проверка имени и фамилии на буквы
-            if (tableName == "Students" || tableName == "Teachers" || tableName == "Groups" || tableName == "Disciplines")
+            bool isValid = true;
+            string errorMessage = "";
+
+            switch (tableName)
             {
-                if (!IsAllLetters(txtFullName.Text))
-                    return false;
+                case "Студенты":
+                    if (!ValidateFullName(txtFullName.Text))
+                    {
+                        errorMessage += "ФИО должно содержать только русские буквы(Фамилия Имя Отчество)\n";
+                        isValid = false;
+                    }
+                    if (!ValidatePhone(txtPhone.Text))
+                    {
+                        errorMessage += "Номер телефона должен содержать 11 цифр\n";
+                        isValid = false;
+                    }
+                    if (!ValidateStudentBook(txtStudentBookNumber.Text))
+                    {
+                        errorMessage += "Неверный номер студенческого билета(8 цифр)\n";
+                        isValid = false;
+                    }
+                    if (cmbGender.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите пол\n";
+                        isValid = false;
+                    }
+                    if (!ValidateGroupId(txtGroup.Text))
+                    {
+                        errorMessage += "Введите правильное название группы вида(ПИ_22_1)\n";
+                        isValid = false;
+                    }
+                    break;
+
+                case "Преподаватели":
+                    if (!ValidateFullName(txtFullName.Text))
+                    {
+                        errorMessage += "ФИО должно содержать только русские буквы(Фамилия Имя Отчество)\n";
+                        isValid = false;
+                    }
+                    if (!ValidatePhone(txtPhone.Text))
+                    {
+                        errorMessage += "Номер телефона должен содержать 11 цифр\n";
+                        isValid = false;
+                    }
+                    if (cmbGender.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите пол\n";
+                        isValid = false;
+                    }
+                    if (cmbPositionId.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите должность\n";
+                        isValid = false;
+                    }
+                    break;
+
+                case "Дисциплины":
+                    if (!ValidateGroupId(txtDisciplineName.Text))
+                    {
+                        errorMessage += "Введите название дисциплины(ПИ_22_1)\n";
+                        isValid = false;
+                    }
+                    if (!ValidateFullName(txtTeacherId.Text))
+                    {
+                        errorMessage += "Введите правильное ФИО преподавателя(Фамилия Имя Отчество)\n";
+                        isValid = false;
+                    }
+                    if (!ValidateHours(textBox1.Text))
+                    {
+                        errorMessage += "Количество часов должно быть положительным числом(от 0 до 500)\n";
+                        isValid = false;
+                    }
+                    break;
+
+                case "Оценки":
+                    if (!ValidateStudentId(txtStudentId.Text))
+                    {
+                        errorMessage += "Введите правильный ID студента(8 цифр)\n";
+                        isValid = false;
+                    }
+                    if (cmbDisciplineId.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите дисциплину\n";
+                        isValid = false;
+                    }
+                    if (!ValidateGrade(txtGrade.Text))
+                    {
+                        errorMessage += "Оценка должна быть от 0 до 100\n";
+                        isValid = false;
+                    }
+                    break;
+
+                case "Группы":
+                    if (string.IsNullOrWhiteSpace(txtGroupName.Text))
+                    {
+                        errorMessage += "Введите название группы(ПИ_22_1)\n";
+                        isValid = false;
+                    }
+                    if (cmbDirectionId.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите направление\n";
+                        isValid = false;
+                    }
+                    if (cmbQualificationId.SelectedIndex == -1)
+                    {
+                        errorMessage += "Выберите квалификацию\n";
+                        isValid = false;
+                    }
+                    if (!ValidateYear(txtAdmissionYear.Text))
+                    {
+                        errorMessage += "Введите корректный год поступления\n";
+                        isValid = false;
+                    }
+                    break;
             }
 
-            // Проверка номера телефона (10 цифр)
-            if (tableName == "Students" || tableName == "Teachers")
+            if (!isValid)
             {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(txtPhone.Text, @"^\d{10}$"))
-                    return false;
+                MessageBox.Show(errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            // Проверка, что должность выбрана из списка
-            if (tableName == "Teachers" && cmbPositionId.SelectedIndex == -1)
+            return isValid;
+        }
+
+        private bool ValidateFullName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            string[] nameParts = name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (nameParts.Length != 3)
             {
-                MessageBox.Show("Пожалуйста, выберите должность.");
+                return false;
+            }
+
+            foreach (string part in nameParts)
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(part, @"^[а-яА-Я]+$"))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool ValidatePhone(string phone)
+        {
+            return !string.IsNullOrWhiteSpace(phone) &&
+                   System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\d{11}$");
+        }
+
+        private bool ValidateStudentBook(string number)
+        {
+            return !string.IsNullOrWhiteSpace(number) &&
+                   System.Text.RegularExpressions.Regex.IsMatch(number, @"^\d+$");
+        }
+
+        private bool ValidateStudentId(string studentId)
+        {
+            return !string.IsNullOrWhiteSpace(studentId) &&
+                   int.TryParse(studentId, out int id) &&
+                   id > 0;
+        }
+
+        private bool ValidateGroupId(string groupId)
+        {
+            if (string.IsNullOrWhiteSpace(groupId))
+            {
+                return false;
+            }
+
+            var match = System.Text.RegularExpressions.Regex.Match(groupId, @"^([А-Я]+)_(\d{2})_(\d)$");
+
+            if (!match.Success)
+            {
                 return false;
             }
 
             return true;
+        }
+
+        private bool ValidateGrade(string grade)
+        {
+            return int.TryParse(grade, out int value) &&
+                   value >= 0 &&
+                   value <= 100;
+        }
+
+        private bool ValidateHours(string hours)
+        {
+            return int.TryParse(hours, out int value) &&
+                   value > 0 &&
+                   value <= 500;
+        }
+
+        private bool ValidateYear(string year)
+        {
+            if (!int.TryParse(year, out int yearValue))
+                return false;
+
+            int currentYear = DateTime.Now.Year;
+            return yearValue >= 1900 && yearValue <= currentYear + 20;
         }
 
         private bool IsAllLetters(string input)
@@ -368,8 +554,20 @@ namespace lab_5_6
             return System.Text.RegularExpressions.Regex.IsMatch(input, @"^[а-яА-Я ]+$");
         }
 
-        private void SaveStudent()
+        private bool SaveStudent()
         {
+            string groupQuery = "SELECT group_id FROM Groups WHERE name = @name";
+            SQLiteCommand groupCmd = new SQLiteCommand(groupQuery, sc);
+            groupCmd.Parameters.AddWithValue("@name", txtGroup.Text);
+            object groupId = groupCmd.ExecuteScalar();
+
+            if (groupId == null)
+            {
+                MessageBox.Show("Указанная группа не найдена!");
+                return false;
+            }
+
+
             string query = isNewRecord
                 ? "INSERT INTO Students (full_name, phone, birth_date, student_book_number, gender, group_id) VALUES (@full_name, @phone, @birth_date, @student_book_number, @gender, @group_id)"
                 : "UPDATE Students SET full_name = @full_name, phone = @phone, birth_date = @birth_date, student_book_number = @student_book_number, gender = @gender, group_id = @group_id WHERE student_id = @student_id";
@@ -380,17 +578,18 @@ namespace lab_5_6
             cmd.Parameters.AddWithValue("@birth_date", dtpBirthDate.Value.ToString("dd.MM.yyyy"));
             cmd.Parameters.AddWithValue("@student_book_number", txtStudentBookNumber.Text);
             cmd.Parameters.AddWithValue("@gender", cmbGender.SelectedItem.ToString());
-            cmd.Parameters.AddWithValue("@group_id", txtGroup.Text);
+            cmd.Parameters.AddWithValue("@group_id", groupId);
 
             if (!isNewRecord)
             {
-                cmd.Parameters.AddWithValue("@student_id", dataRow["student_id"]);
+                cmd.Parameters.AddWithValue("@student_id", dataRow["ID Студента"]);
             }
 
             cmd.ExecuteNonQuery();
+            return true;
         }
 
-        private void SaveTeacher()
+        private bool SaveTeacher()
         {
             string query = isNewRecord
                 ? "INSERT INTO Teachers (full_name, phone, birth_date, gender, position_id) VALUES (@full_name, @phone, @birth_date, @gender, @position_id)"
@@ -405,14 +604,26 @@ namespace lab_5_6
 
             if (!isNewRecord)
             {
-                cmd.Parameters.AddWithValue("@teacher_id", dataRow["teacher_id"]);
+                cmd.Parameters.AddWithValue("@teacher_id", dataRow["ID Преподавателя"]);
             }
 
             cmd.ExecuteNonQuery();
+            return true;
         }
 
-        private void SaveDiscipline()
+        private bool SaveDiscipline()
         {
+            string teacherQuery = "SELECT teacher_id FROM Teachers WHERE full_name = @full_name";
+            SQLiteCommand teacherCmd = new SQLiteCommand(teacherQuery, sc);
+            teacherCmd.Parameters.AddWithValue("@full_name", txtTeacherId.Text);
+            object teacherId = teacherCmd.ExecuteScalar();
+
+            if (teacherId == null)
+            {
+                MessageBox.Show("Указанный преподаватель не найден!");
+                return false;
+            }
+
             string query = isNewRecord
                 ? "INSERT INTO Disciplines (discipline_name, discipline_description, teacher_id, hours_count) VALUES (@discipline_name, @discipline_description, @teacher_id, @hours_count)"
                 : "UPDATE Disciplines SET discipline_name = @discipline_name, discipline_description = @discipline_description, teacher_id = @teacher_id, hours_count = @hours_count WHERE discipline_id = @discipline_id";
@@ -420,54 +631,90 @@ namespace lab_5_6
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
             cmd.Parameters.AddWithValue("@discipline_name", txtDisciplineName.Text);
             cmd.Parameters.AddWithValue("@discipline_description", txtDisciplineDescription.Text);
-            cmd.Parameters.AddWithValue("@teacher_id", txtTeacherId.Text);
+            cmd.Parameters.AddWithValue("@teacher_id", teacherId);
             cmd.Parameters.AddWithValue("@hours_count", textBox1.Text);
 
             if (!isNewRecord)
             {
-                cmd.Parameters.AddWithValue("@discipline_id", dataRow["discipline_id"]);
+                cmd.Parameters.AddWithValue("@discipline_id", dataRow["ID Дисциплины"]);
             }
 
             cmd.ExecuteNonQuery();
+            return true;
         }
 
-        private void SaveGrade()
+        private bool SaveGrade()
         {
+            string studentQuery = "SELECT student_id FROM Students WHERE full_name = @full_name";
+            SQLiteCommand studentCmd = new SQLiteCommand(studentQuery, sc);
+            studentCmd.Parameters.AddWithValue("@full_name", txtStudentId.Text);
+            object studentId = studentCmd.ExecuteScalar();
+
+            if (studentId == null)
+            {
+                MessageBox.Show("Указанный студент не найден!");
+                return false;
+            }
+
             string query = isNewRecord
                 ? "INSERT INTO Grades (student_id, discipline_id, grade) VALUES (@student_id, @discipline_id, @grade)"
                 : "UPDATE Grades SET student_id = @student_id, discipline_id = @discipline_id, grade = @grade WHERE grade_id = @grade_id";
 
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
-            cmd.Parameters.AddWithValue("@student_id", txtStudentId.Text);
+            cmd.Parameters.AddWithValue("@student_id", studentId);
             cmd.Parameters.AddWithValue("@discipline_id", cmbDisciplineId.SelectedValue);
             cmd.Parameters.AddWithValue("@grade", txtGrade.Text);
 
             if (!isNewRecord)
             {
-                cmd.Parameters.AddWithValue("@grade_id", dataRow["grade_id"]);
+                cmd.Parameters.AddWithValue("@grade_id", dataRow["ID Оценки"]);
             }
 
             cmd.ExecuteNonQuery();
+            return true;
         }
 
-        private void SaveGroup()
+        private bool SaveGroup()
         {
+            string directionQuery = "SELECT direction_id FROM Directions WHERE direction_name = @direction_name";
+            SQLiteCommand directionCmd = new SQLiteCommand(directionQuery, sc);
+            directionCmd.Parameters.AddWithValue("@direction_name", cmbDirectionId.Text);
+            object directionId = directionCmd.ExecuteScalar();
+
+            if (directionId == null)
+            {
+                MessageBox.Show("Указанное направление не найдено!");
+                return false;
+            }
+
+            string qualificationQuery = "SELECT qualification_id FROM Qualifications WHERE qualification_name = @qualification_name";
+            SQLiteCommand qualificationCmd = new SQLiteCommand(qualificationQuery, sc);
+            qualificationCmd.Parameters.AddWithValue("@qualification_name", cmbQualificationId.Text);
+            object qualificationId = qualificationCmd.ExecuteScalar();
+
+            if (qualificationId == null)
+            {
+                MessageBox.Show("Указанная квалификация не найдена!");
+                return false;
+            }
+
             string query = isNewRecord
                 ? "INSERT INTO Groups (name, direction_id, qualification_id, admission_year) VALUES (@name, @direction_id, @qualification_id, @admission_year)"
                 : "UPDATE Groups SET name = @name, direction_id = @direction_id, qualification_id = @qualification_id, admission_year = @admission_year WHERE group_id = @group_id";
 
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
             cmd.Parameters.AddWithValue("@name", txtGroupName.Text);
-            cmd.Parameters.AddWithValue("@direction_id", cmbDirectionId.SelectedValue);
-            cmd.Parameters.AddWithValue("@qualification_id", cmbQualificationId.SelectedValue);
+            cmd.Parameters.AddWithValue("@direction_id", directionId);
+            cmd.Parameters.AddWithValue("@qualification_id", qualificationId);
             cmd.Parameters.AddWithValue("@admission_year", txtAdmissionYear.Text);
 
             if (!isNewRecord)
             {
-                cmd.Parameters.AddWithValue("@group_id", dataRow["group_id"]);
+                cmd.Parameters.AddWithValue("@group_id", dataRow["ID Группы"]);
             }
 
             cmd.ExecuteNonQuery();
+            return true;
         }
         private void btnCancel_Click(object sender, EventArgs e)
         {
