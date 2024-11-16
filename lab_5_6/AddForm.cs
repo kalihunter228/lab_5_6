@@ -40,7 +40,7 @@ namespace lab_5_6
 
             switch (tableName)
             {
-                case "Students":
+                case "Студенты":
                     lblFullName.Visible = true;
                     txtFullName.Visible = true;
                     lblPhone.Visible = true;
@@ -67,7 +67,7 @@ namespace lab_5_6
                     }
                     break;
 
-                case "Teachers":
+                case "Преподаватели":
                     lblFullName.Visible = true;
                     txtFullName.Visible = true;
                     lblPhone.Visible = true;
@@ -92,7 +92,7 @@ namespace lab_5_6
                     }
                     break;
 
-                case "Disciplines":
+                case "Дисциплины":
                     lblDisciplineName.Visible = true;
                     txtDisciplineName.Visible = true;
                     lblDisciplineDescription.Visible = true;
@@ -112,7 +112,7 @@ namespace lab_5_6
                     }
                     break;
 
-                case "Grades":
+                case "Оценки":
                     lblStudentId.Visible = true;
                     txtStudentId.Visible = true;
                     lblDisciplineId.Visible = true;
@@ -130,7 +130,7 @@ namespace lab_5_6
                     }
                     break;
 
-                case "Groups":
+                case "Группы":
                     lblGroupName.Visible = true;
                     txtGroupName.Visible = true;
                     lblDirectionId.Visible = true;
@@ -564,9 +564,5 @@ namespace lab_5_6
 
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
