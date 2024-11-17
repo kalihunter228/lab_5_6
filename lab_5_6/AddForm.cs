@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Data.SQLite;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace lab_5_6
@@ -84,11 +85,20 @@ namespace lab_5_6
 
                     if (!isNewRecord)
                     {
+
                         txtFullName.Text = dataRow["ФИО"].ToString();
                         txtPhone.Text = dataRow["Телефон"].ToString();
                         dtpBirthDate.Value = DateTime.Parse(dataRow["Дата рождения"].ToString());
                         cmbGender.SelectedItem = dataRow["Пол"].ToString();
-                        cmbPositionId.SelectedValue = dataRow["Должность"];
+                        string position = dataRow["Должность"].ToString();
+
+                        foreach (var item in cmbPositionId.Items)
+                        {
+                            if ((item as dynamic).Text == position)
+                            {
+                                cmbPositionId.SelectedItem = item;
+                            }
+                        }
                     }
                     break;
 
@@ -125,8 +135,15 @@ namespace lab_5_6
                     if (!isNewRecord)
                     {
                         txtStudentId.Text = dataRow["Студент"].ToString();
-                        cmbDisciplineId.SelectedValue = dataRow["Дисциплина"];
                         txtGrade.Text = dataRow["Оценка"].ToString();
+
+                        string discipline = dataRow["Дисциплина"].ToString();
+                        var selectedDiscipline = cmbDisciplineId.Items.Cast<object>()
+                            .FirstOrDefault(item => (item as dynamic).Text == discipline);
+                        if (selectedDiscipline != null)
+                        {
+                            cmbDisciplineId.SelectedItem = selectedDiscipline;
+                        }
                     }
                     break;
 
@@ -146,9 +163,23 @@ namespace lab_5_6
                     if (!isNewRecord)
                     {
                         txtGroupName.Text = dataRow["Название группы"].ToString();
-                        cmbDirectionId.SelectedValue = dataRow["Направление"];
-                        cmbQualificationId.SelectedValue = dataRow["Квалификация"];
                         txtAdmissionYear.Text = dataRow["Год поступления"].ToString();
+
+                        string direction = dataRow["Направление"].ToString();
+                        var selectedDirection = cmbDirectionId.Items.Cast<object>()
+                            .FirstOrDefault(item => (item as dynamic).Text == direction);
+                        if (selectedDirection != null)
+                        {
+                            cmbDirectionId.SelectedItem = selectedDirection;
+                        }
+
+                        string qualification = dataRow["Квалификация"].ToString();
+                        var selectedQualification = cmbQualificationId.Items.Cast<object>()
+                            .FirstOrDefault(item => (item as dynamic).Text == qualification);
+                        if (selectedQualification != null)
+                        {
+                            cmbQualificationId.SelectedItem = selectedQualification;
+                        }
                     }
                     break;
 
@@ -401,9 +432,9 @@ namespace lab_5_6
                     break;
 
                 case "Дисциплины":
-                    if (!ValidateGroupId(txtDisciplineName.Text))
+                    if (!IsAllLetters(txtDisciplineName.Text))
                     {
-                        errorMessage += "Введите название дисциплины(ПИ_22_1)\n";
+                        errorMessage += "Введите название дисциплины\n";
                         isValid = false;
                     }
                     if (!ValidateFullName(txtTeacherId.Text))
@@ -419,9 +450,9 @@ namespace lab_5_6
                     break;
 
                 case "Оценки":
-                    if (!ValidateStudentId(txtStudentId.Text))
+                    if (!ValidateFullName(txtStudentId.Text))
                     {
-                        errorMessage += "Введите правильный ID студента(8 цифр)\n";
+                        errorMessage += "Введите правильное ФИО студента(Фамилия Имя Отчество)\n";
                         isValid = false;
                     }
                     if (cmbDisciplineId.SelectedIndex == -1)
@@ -431,7 +462,7 @@ namespace lab_5_6
                     }
                     if (!ValidateGrade(txtGrade.Text))
                     {
-                        errorMessage += "Оценка должна быть от 0 до 100\n";
+                        errorMessage += "Оценка должна быть от 1 до 5\n";
                         isValid = false;
                     }
                     break;
@@ -529,8 +560,8 @@ namespace lab_5_6
         private bool ValidateGrade(string grade)
         {
             return int.TryParse(grade, out int value) &&
-                   value >= 0 &&
-                   value <= 100;
+                   value >= 1 &&
+                   value <= 5;
         }
 
         private bool ValidateHours(string hours)
@@ -591,6 +622,11 @@ namespace lab_5_6
 
         private bool SaveTeacher()
         {
+            string teacherQuery = "SELECT position_id FROM Position WHERE position = @position_id";
+            SQLiteCommand teacherCmd = new SQLiteCommand(teacherQuery, sc);
+            teacherCmd.Parameters.AddWithValue("@position_id", cmbPositionId.Text);
+            object teacherId = teacherCmd.ExecuteScalar();
+
             string query = isNewRecord
                 ? "INSERT INTO Teachers (full_name, phone, birth_date, gender, position_id) VALUES (@full_name, @phone, @birth_date, @gender, @position_id)"
                 : "UPDATE Teachers SET full_name = @full_name, phone = @phone, birth_date = @birth_date, gender = @gender, position_id = @position_id WHERE teacher_id = @teacher_id";
@@ -600,7 +636,7 @@ namespace lab_5_6
             cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
             cmd.Parameters.AddWithValue("@birth_date", dtpBirthDate.Value.ToString("dd.MM.yyyy"));
             cmd.Parameters.AddWithValue("@gender", cmbGender.SelectedItem.ToString());
-            cmd.Parameters.AddWithValue("@position_id", cmbPositionId.SelectedValue);
+            cmd.Parameters.AddWithValue("@position_id", teacherId);
 
             if (!isNewRecord)
             {
@@ -650,11 +686,17 @@ namespace lab_5_6
             studentCmd.Parameters.AddWithValue("@full_name", txtStudentId.Text);
             object studentId = studentCmd.ExecuteScalar();
 
+
             if (studentId == null)
             {
                 MessageBox.Show("Указанный студент не найден!");
                 return false;
             }
+
+            string disciplineQuery = "SELECT discipline_id FROM Disciplines WHERE discipline_name = @discipline_id";
+            SQLiteCommand disciplineCmd = new SQLiteCommand(disciplineQuery, sc);
+            disciplineCmd.Parameters.AddWithValue("@discipline_id", cmbDisciplineId.Text);
+            object disciplineId = disciplineCmd.ExecuteScalar();
 
             string query = isNewRecord
                 ? "INSERT INTO Grades (student_id, discipline_id, grade) VALUES (@student_id, @discipline_id, @grade)"
@@ -662,7 +704,7 @@ namespace lab_5_6
 
             SQLiteCommand cmd = new SQLiteCommand(query, sc);
             cmd.Parameters.AddWithValue("@student_id", studentId);
-            cmd.Parameters.AddWithValue("@discipline_id", cmbDisciplineId.SelectedValue);
+            cmd.Parameters.AddWithValue("@discipline_id", disciplineId);
             cmd.Parameters.AddWithValue("@grade", txtGrade.Text);
 
             if (!isNewRecord)
@@ -676,7 +718,7 @@ namespace lab_5_6
 
         private bool SaveGroup()
         {
-            string directionQuery = "SELECT direction_id FROM Directions WHERE direction_name = @direction_name";
+            string directionQuery = "SELECT direction_id FROM Direction WHERE direction = @direction_name";
             SQLiteCommand directionCmd = new SQLiteCommand(directionQuery, sc);
             directionCmd.Parameters.AddWithValue("@direction_name", cmbDirectionId.Text);
             object directionId = directionCmd.ExecuteScalar();
@@ -687,7 +729,7 @@ namespace lab_5_6
                 return false;
             }
 
-            string qualificationQuery = "SELECT qualification_id FROM Qualifications WHERE qualification_name = @qualification_name";
+            string qualificationQuery = "SELECT qualification_id FROM Qualification WHERE qualification = @qualification_name";
             SQLiteCommand qualificationCmd = new SQLiteCommand(qualificationQuery, sc);
             qualificationCmd.Parameters.AddWithValue("@qualification_name", cmbQualificationId.Text);
             object qualificationId = qualificationCmd.ExecuteScalar();
