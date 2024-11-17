@@ -785,7 +785,36 @@ namespace lab_5_6
 
         private void txtPhone_TextChanged(object sender, EventArgs e)
         {
+            string input = txtPhone.Text;
+            if (!input.All(char.IsDigit))
+            {
+                MessageBox.Show("Разрешено использовать только цифры.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtPhone.Text = txtPhone.Tag?.ToString() ?? string.Empty;
+                txtPhone.SelectionStart = txtPhone.Text.Length;
+                return;
+            }
+            if (input.Length == 11 && input[0] == '8')
+            {
+                txtPhone.Tag = input;
+            }
+            else if (input.Length == 11 && input[0] != '8')
+            {
+                MessageBox.Show("Первая цифра должна быть 8.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtPhone.Text = txtPhone.Tag?.ToString() ?? string.Empty;
+                txtPhone.SelectionStart = txtPhone.Text.Length;
+            }
+            else if (input.Length > 11)
+            {
+                MessageBox.Show("Длина номера телефона должна быть 11 цифр.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtPhone.Text = txtPhone.Tag?.ToString() ?? string.Empty;
+                txtPhone.SelectionStart = txtPhone.Text.Length;
+            }
+            else
+            {
+                txtPhone.Tag = input;
+            }
 
+            txtPhone.SelectionStart = txtPhone.Text.Length;
         }
 
         private void txtDisciplineDescription_TextChanged(object sender, EventArgs e)

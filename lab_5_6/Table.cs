@@ -180,7 +180,7 @@ namespace lab_5_6
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
-
+            this.Close();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -216,6 +216,113 @@ namespace lab_5_6
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void toolStripTextBox1_KeyPress(object sender, EventArgs e)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(this.sc.ConnectionString))
+            {
+                if (toolStripTextBox1.Text != "")
+                {
+                    conn.Open();
+                    string field = "";
+                    string query = "";
+
+                    switch (this.nameTable)
+                    {
+                        case "Студенты":
+                            {
+                                field = "ФИО";
+                                query = "SELECT " +
+                                        "Students.student_id AS 'ID Студента', " +
+                                        "Students.full_name AS 'ФИО', " +
+                                        "Students.phone AS 'Телефон', " +
+                                        "Students.birth_date AS 'Дата рождения', " +
+                                        "Students.student_book_number AS 'Номер студенческого билета', " +
+                                        "Students.gender AS 'Пол', " +
+                                        "Groups.name AS 'Группа' " +
+                                        "FROM Students " +
+                                        "LEFT JOIN Groups ON Students.group_id = Groups.group_id " +
+                                        $"WHERE Students.full_name glob '*{toolStripTextBox1.Text}*'";
+                                break;
+                            }
+                        case "Преподаватели":
+                            {
+                                field = "ФИО";
+                                query = "SELECT " +
+                                        "Teachers.teacher_id AS 'ID Преподавателя', " +
+                                        "Teachers.full_name AS 'ФИО', " +
+                                        "Teachers.phone AS 'Телефон', " +
+                                        "Teachers.birth_date AS 'Дата рождения', " +
+                                        "Position.position AS 'Должность', " +
+                                        "Teachers.gender AS 'Пол' " +
+                                        "FROM Teachers " +
+                                        "LEFT JOIN Position ON Teachers.position_id = Position.position_id " +
+                                        $"WHERE Teachers.full_name glob '*{toolStripTextBox1.Text}*'";
+                                break;
+                            }
+                        case "Группы":
+                            {
+                                field = "Название группы";
+                                query = "SELECT " +
+                                        "Groups.group_id AS 'ID Группы', " +
+                                        "Groups.name AS 'Название группы', " +
+                                        "Direction.direction AS 'Направление', " +
+                                        "Qualification.qualification AS 'Квалификация', " +
+                                        "Groups.admission_year AS 'Год поступления' " +
+                                        "FROM Groups " +
+                                        "LEFT JOIN Direction ON Groups.direction_id = Direction.direction_id " +
+                                        "LEFT JOIN Qualification ON Groups.qualification_id = Qualification.qualification_id " +
+                                        $"WHERE Groups.name glob '*{toolStripTextBox1.Text}*'";
+                                break;
+                            }
+                        case "Дисциплины":
+                            {
+                                field = "Название дисциплины";
+                                query = "SELECT " +
+                                        "Disciplines.discipline_id AS 'ID Дисциплины', " +
+                                        "Disciplines.discipline_name AS 'Название дисциплины', " +
+                                        "Disciplines.discipline_description AS 'Описание', " +
+                                        "Teachers.full_name AS 'Преподаватель', " +
+                                        "Disciplines.hours_count AS 'Количество часов' " +
+                                        "FROM Disciplines " +
+                                        "LEFT JOIN Teachers ON Disciplines.teacher_id = Teachers.teacher_id " +
+                                        $"WHERE Disciplines.discipline_name glob '*{toolStripTextBox1.Text}*'";
+                                break;
+                            }
+                        case "Оценки":
+                            {
+                                field = "Студент";
+                                query = "SELECT " +
+                                        "Grades.grade_id AS 'ID Оценки', " +
+                                        "Students.full_name AS 'Студент', " +
+                                        "Disciplines.discipline_name AS 'Дисциплина', " +
+                                        "Grades.grade AS 'Оценка' " +
+                                        "FROM Grades " +
+                                        "LEFT JOIN Students ON Grades.student_id = Students.student_id " +
+                                        "LEFT JOIN Disciplines ON Grades.discipline_id = Disciplines.discipline_id " +
+                                        $"WHERE Students.full_name glob '*{toolStripTextBox1.Text}*'";
+                                break;
+                            }
+                    }
+
+                    this.dt.Clear();
+                    a = new SQLiteDataAdapter(query, conn);
+                    a.Fill(dt);
+                    dataGridView1.DataSource = this.dt;
+
+                    conn.Close();
+                }
+                else
+                {
+                    a = new SQLiteDataAdapter(this.query, conn);
+                    this.dt.Clear();
+                    a.Fill(dt);
+                    dataGridView1.DataSource = this.dt;
+
+                    conn.Close();
+                }
+            }
         }
     }
 }
