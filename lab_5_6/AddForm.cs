@@ -284,7 +284,6 @@ namespace lab_5_6
 
         private void HideAllControls()
         {
-            // Students
             lblFullName.Visible = false;
             txtFullName.Visible = false;
             lblPhone.Visible = false;
@@ -298,11 +297,9 @@ namespace lab_5_6
             lblGroupId.Visible = false;
             txtGroup.Visible = false;
 
-            // Teachers
             lblPositionId.Visible = false;
             cmbPositionId.Visible = false;
 
-            // Disciplines
             lblDisciplineName.Visible = false;
             txtDisciplineName.Visible = false;
             lblDisciplineDescription.Visible = false;
@@ -312,7 +309,6 @@ namespace lab_5_6
             lblHoursCount.Visible = false;
             textBox1.Visible = false;
 
-            // Grades
             lblStudentId.Visible = false;
             txtStudentId.Visible = false;
             lblDisciplineId.Visible = false;
@@ -320,7 +316,6 @@ namespace lab_5_6
             lblGrade.Visible = false;
             txtGrade.Visible = false;
 
-            // Groups
             lblGroupName.Visible = false;
             txtGroupName.Visible = false;
             lblDirectionId.Visible = false;

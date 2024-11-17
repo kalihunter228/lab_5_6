@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aspose.Pdf.AI;
+using System;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -9,16 +10,13 @@ namespace lab_5_6
 
     public partial class Form1 : Form
     {
-
-        // Строка подключения к базе данных SQLite
-        private string connectionString = "Data Source=C:\\Users\\samSepi0l\\Desktop\\bd;Version=3;";
-        //private string connectionString = "Data Source=C:\\Users\\coast\\AppData\\Roaming\\DBeaverData\\workspace6\\lab5-6\\lab5-6;Version=3;";
+        //private string connectionString = "Data Source=C:\\Users\\samSepi0l\\Desktop\\bd;Version=3;";
+        private string connectionString = "Data Source=C:\\Users\\coast\\AppData\\Roaming\\DBeaverData\\workspace6\\lab5-6\\lab5-6;Version=3;";
         public Form1()
         {
             InitializeComponent();
         }
 
-        // Метод для подключения к базе данных и отображения данных в DataGridView
         private void ConnectToDatabase()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -42,7 +40,6 @@ namespace lab_5_6
 
             }
         }
-        // Обработчик события загрузки формы
         private void Form1_Load(object sender, EventArgs e)
         {
             ConnectToDatabase();
@@ -51,32 +48,27 @@ namespace lab_5_6
         {
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e) //ФАЙЛ
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e) //ТАБЛИЦЫ
+        private void toolStripMenuItem2_Click(object sender, EventArgs e) 
         {
 
         }
 
-        private void toolStripMenuItem3_Click(object sender, EventArgs e) //СПРАВОЧНИКИ
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void toolStripMenuItem4_Click(object sender, EventArgs e) //ОТЧЕТЫ
+        private void toolStripMenuItem4_Click(object sender, EventArgs e) 
         {
 
         }
 
-        private void toolStripMenuItem5_Click(object sender, EventArgs e) //ОКНО
-        {
-
-        }
-
-        private void квалификацияToolStripMenuItem_Click(object sender, EventArgs e)
+        private void toolStripMenuItem5_Click(object sender, EventArgs e)
         {
 
         }
@@ -104,7 +96,6 @@ namespace lab_5_6
         
         private void OpenTableForm(string tableName)
         {
-            // Проверка, если окно с такой таблицей уже открыто
             bool isOpen = MdiChildren.Any(child => child.Text == tableName);
 
             if (!isOpen)
@@ -117,7 +108,6 @@ namespace lab_5_6
 
         private void OpenDoubleTableForm(string tableName)
         {
-            // Проверка, если окно с такой таблицей уже открыто
             bool isOpen = MdiChildren.Any(child => child.Text == tableName);
 
             if (!isOpen)
@@ -149,6 +139,48 @@ namespace lab_5_6
         private void оценкиToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenTableForm("Оценки");
+        }
+
+        private void отчетПоСтудентамToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Report reportForm = new Report(1, connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
+        }
+
+        private void отчетПоГруппамToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Report reportForm = new Report(2, connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
+        }
+
+        private void отчетПоДисциплинамToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Report reportForm = new Report(3, connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
+        }
+
+        private void квалификацияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            vsp reportForm = new vsp("Квалификация", connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
+        }
+
+        private void должностьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            vsp reportForm = new vsp("Должность", connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
+        }
+
+        private void направлениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            vsp reportForm = new vsp("Направление", connectionString);
+            reportForm.MdiParent = this;
+            reportForm.Show();
         }
     }
 }

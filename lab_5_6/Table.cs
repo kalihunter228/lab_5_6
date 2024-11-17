@@ -110,7 +110,6 @@ namespace lab_5_6
             dataGridView1.DataSource = dt;
             HideFields();
 
-            // Подключение обработчиков событий
             toolStripButton1.Click += new EventHandler(toolStripButton1_Click);
             toolStripButton2.Click += new EventHandler(toolStripButton2_Click);
             toolStripButton3.Click += new EventHandler(toolStripButton3_Click);
@@ -215,7 +214,250 @@ namespace lab_5_6
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выделите строку для удаления.");
+                return;
+            }
 
+            var result = MessageBox.Show("Вы уверены, что хотите удалить эту запись?", "Подтверждение удаления",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
+                DataRow dataRow = ((DataRowView)selectedRow.DataBoundItem).Row;
+                int id;
+
+                switch (nameTable)
+                {
+                    case "Студенты":
+                        id = Convert.ToInt32(dataRow["ID Студента"]);
+                        DeleteStudent(id);
+                        break;
+                    case "Группы":
+                        id = Convert.ToInt32(dataRow["ID Группы"]);
+                        DeleteGroup(id);
+                        break;
+                    case "Дисциплины":
+                        id = Convert.ToInt32(dataRow["ID Дисциплины"]);
+                        DeleteDiscipline(id);
+                        break;
+                    case "Оценки":
+                        id = Convert.ToInt32(dataRow["ID Оценки"]);
+                        DeleteGrade(id);
+                        break;
+                    case "Преподаватели":
+                        id = Convert.ToInt32(dataRow["ID Преподавателя"]);
+                        DeleteTeacher(id);
+                        break;
+                    default:
+                        MessageBox.Show("Неизвестная таблица.");
+                        return;
+                }
+
+                dataRow.Delete();
+                RefreshData();
+                dataGridView1.ClearSelection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении записи: {ex.Message}", "Ошибка");
+            }
+        }
+
+        private void RefreshData()
+        {
+            try
+            {
+                dt.Clear();
+                using (a = new SQLiteDataAdapter(query, sc))
+                {
+                    a.Fill(dt);
+                }
+                dataGridView1.DataSource = dt;
+
+
+                if (dataGridView1.Rows.Count > 0)
+                {
+                    dataGridView1.ClearSelection();
+                }
+                else
+                {
+                    MessageBox.Show("Нет данных для отображения.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обновлении данных: {ex.Message}", "Ошибка");
+            }
+        }
+
+        private void DeleteStudent(int studentId)
+        {
+            using (SQLiteTransaction transaction = sc.BeginTransaction())
+            {
+                try
+                {
+                    string deleteGradesQuery = "DELETE FROM Grades WHERE student_id = @studentId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteGradesQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@studentId", studentId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    string deleteStudentQuery = "DELETE FROM Students WHERE student_id = @studentId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteStudentQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@studentId", studentId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Студент и его оценки успешно удалены", "Успех");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                }
+            }
+        }
+
+        private void DeleteTeacher(int teacherId)
+        {
+            using (SQLiteTransaction transaction = sc.BeginTransaction())
+            {
+                try
+                {
+                    string deleteTeacherDisciplineQuery = "DELETE FROM TeacherDiscipline WHERE teacher_id = @teacherId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteTeacherDisciplineQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@teacherId", teacherId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    string deleteTeacherQuery = "DELETE FROM Teachers WHERE teacher_id = @teacherId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteTeacherQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@teacherId", teacherId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Преподаватель успешно удален", "Успех");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                    throw;
+                }
+            }
+        }
+
+        private void DeleteDiscipline(int disciplineId)
+        {
+            using (SQLiteTransaction transaction = sc.BeginTransaction())
+            {
+                try
+                {
+                    string deleteGradesQuery = "DELETE FROM Grades WHERE discipline_id = @disciplineId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteGradesQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@disciplineId", disciplineId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    string deleteTeacherDisciplineQuery = "DELETE FROM TeacherDiscipline WHERE discipline_id = @disciplineId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteTeacherDisciplineQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@disciplineId", disciplineId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    string deleteDisciplineQuery = "DELETE FROM Disciplines WHERE discipline_id = @disciplineId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteDisciplineQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@disciplineId", disciplineId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Дисциплина успешно удалена", "Успех");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                }
+            }
+        }
+
+        private void DeleteGroup(int groupId)
+        {
+            string checkStudentsQuery = "SELECT COUNT(*) FROM Students WHERE group_id = @groupId";
+            using (SQLiteCommand cmd = new SQLiteCommand(checkStudentsQuery, sc))
+            {
+                cmd.Parameters.AddWithValue("@groupId", groupId);
+                int studentCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+                if (studentCount > 0)
+                {
+                    MessageBox.Show("Невозможно удалить группу, так как в ней есть студенты", "Предупреждение");
+                    return;
+                }
+            }
+
+            using (SQLiteTransaction transaction = sc.BeginTransaction())
+            {
+                try
+                {
+                    string deleteGroupQuery = "DELETE FROM Groups WHERE group_id = @groupId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteGroupQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@groupId", groupId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Группа успешно удалена", "Успех");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                }
+            }
+        }
+
+        private void DeleteGrade(int gradeId)
+        {
+            using (SQLiteTransaction transaction = sc.BeginTransaction())
+            {
+                try
+                {
+                    string deleteGradeQuery = "DELETE FROM Grades WHERE grade_id = @gradeId";
+                    using (SQLiteCommand cmd = new SQLiteCommand(deleteGradeQuery, sc))
+                    {
+                        cmd.Parameters.AddWithValue("@gradeId", gradeId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show("Оценка успешно удалена", "Успех");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                }
+            }
         }
 
         private void toolStripTextBox1_KeyPress(object sender, EventArgs e)
