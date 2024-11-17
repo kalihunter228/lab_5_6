@@ -11,8 +11,8 @@ namespace lab_5_6
     {
 
         // Строка подключения к базе данных SQLite
-        //private string connectionString = "Data Source=C:\\Users\\samSepi0l\\Desktop\\bd;Version=3;";
-        private string connectionString = "Data Source=C:\\Users\\coast\\AppData\\Roaming\\DBeaverData\\workspace6\\lab5-6\\lab5-6;Version=3;";
+        private string connectionString = "Data Source=C:\\Users\\samSepi0l\\Desktop\\bd;Version=3;";
+        //private string connectionString = "Data Source=C:\\Users\\coast\\AppData\\Roaming\\DBeaverData\\workspace6\\lab5-6\\lab5-6;Version=3;";
         public Form1()
         {
             InitializeComponent();
